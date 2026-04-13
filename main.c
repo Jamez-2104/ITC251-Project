@@ -3,7 +3,7 @@
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
-        printf("Usage: ./grep-lite [flags] [pattern][text]\n");
+        printf("Usage: ./grep-lite [flags] [pattern] '[text]'\n");
         return 1;
     }
 
@@ -43,11 +43,17 @@ int main(int argc, char *argv[]) {
         }
         while (fgets(line, sizeof(line), fptr)){
                 if (strstr(line, pattern)){//breaks at first sight of pattern
-                        patternText=line;//TODO add method to traverse through more sightings of pattern
+                        patternText=line; //TODO add method to traverse through more sightings of pattern. mayve sequencial search algo?
                         break;
                 }
         }
-     }
+     }else{
+         if (strstr(text, pattern)){//breaks at first sight of pattern
+                printf("%s is found within the text: %s\n", pattern, text); //TODO add method to traverse through more sightings of pattern && add frequency count
+                patternText = text;
+         }
+    }
+
 
     printf("Pattern: %s\n", pattern);
     printf("Pattern in text: %s\n", patternText);
@@ -55,4 +61,3 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
-
