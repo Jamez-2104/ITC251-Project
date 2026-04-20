@@ -1,5 +1,8 @@
+CC = gcc
+CFLAGS = -Wall -g
+
 all:
-	gcc -o grep-lite main.c
+	$(CC) $(CFLAGS) -o grep-lite main.c
 
 clean:
 	rm -f grep-lite
