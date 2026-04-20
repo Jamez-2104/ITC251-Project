@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 
-// Function prototype
 void process_stream(FILE *file, const char *pattern, int n_flag, int i_flag, int w_flag, int c_flag);
 
 int main(int argc, char *argv[]) {
-    // Check if we have at least the program name and a pattern
+    // check argument count
     if (argc < 2) {
         printf("Usage: ./grep-lite [flags] [pattern] [file...]\n");
         return 1;
@@ -17,7 +16,7 @@ int main(int argc, char *argv[]) {
     int c_flag = 0;
     int arg_idx = 1;
 
-    // Parse the flags
+    // check for flags
     while (arg_idx < argc && argv[arg_idx][0] == '-') {
         if (argv[arg_idx][1] == 'n') {
             n_flag = 1;
@@ -34,7 +33,7 @@ int main(int argc, char *argv[]) {
         arg_idx++;
     }
 
-    // Make sure a pattern was provided after the flags
+    // get the pattern
     if (arg_idx >= argc) {
         printf("Error: Missing pattern to search for.\n");
         return 1;
@@ -43,11 +42,11 @@ int main(int argc, char *argv[]) {
     char *pattern = argv[arg_idx];
     arg_idx++;
 
-    // If no files are listed, read from standard input
+    // check if reading from stdin or file
     if (arg_idx == argc) {
         process_stream(stdin, pattern, n_flag, i_flag, w_flag, c_flag);
     } else {
-        // Loop through all provided files
+        // loop through files
         for (int i = arg_idx; i < argc; i++) {
             FILE *fptr = fopen(argv[i], "r");
             if (fptr == NULL) {
@@ -62,11 +61,13 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-// Function to handle reading and matching line by line
+// function to search file
 void process_stream(FILE *file, const char *pattern, int n_flag, int i_flag, int w_flag, int c_flag) {
     char line[1024]; 
 
+    // read line by line
     while (fgets(line, sizeof(line), file)) {
+        // check if pattern is in the line
         if (strstr(line, pattern) != NULL) {
             printf("%s", line);
         }
