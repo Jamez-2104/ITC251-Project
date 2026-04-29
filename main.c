@@ -2,6 +2,9 @@
 #include <string.h>
 #include "search.h"
 
+void process_stream(FILE *file, const char *pattern, int n_flag, int i_flag, int w_flag, int c_flag);
+void process_i(const char *line, const char *pattern);
+
 int main(int argc, char *argv[]) {
     if (argc < 2) {
         printf("Usage: ./grep-lite [flags] [pattern] [file...]\n");
@@ -58,4 +61,28 @@ int main(int argc, char *argv[]) {
         }
     }
     return 0;
+}
+
+// function to search file
+void process_stream(FILE *file, const char *pattern, int n_flag, int i_flag, int w_flag, int c_flag) {
+    char line[1024]; 
+
+    // read line by line
+    while (fgets(line, sizeof(line), file)) {
+        // check if pattern is in the line
+        if (i_flag == 1){
+            process_i(line, pattern);
+        }
+        if (strstr(line, pattern) != NULL) {
+            printf("%s", line);
+        }
+
+    }
+}
+
+//compares line with pattern ignoring case sensitive chars
+void process_i(const char *line, const char *pattern){
+    if (strcasestr(line, pattern)!=NULL){
+        printf("%s", line);
+    }
 }
