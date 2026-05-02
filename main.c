@@ -1,88 +1,110 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <dirent.h>
+#include <sys/stat.h>
 #include "search.h"
 
-void process_stream(FILE *file, const char *pattern, int n_flag, int i_flag, int w_flag, int c_flag);
-void process_i(const char *line, const char *pattern);
+int main(void) {
+        int flag = -1;
+        int flag_n = 0;
+        int flag_i = 0;
+        int flag_w = 0;
+        int flag_c = 0;
 
-int main(int argc, char *argv[]) {
-    if (argc < 2) {
-        printf("Usage: ./grep-lite [flags] [pattern] [file...]\n");
-        return 1;
-    }
+        char userFolder[256];
+        char pattern[256];
 
-    int n_flag = 0, i_flag = 0, w_flag = 0, c_flag = 0;
-    int arg_idx = 1;
+        printf("Welcome to grep-lite\n");
 
-    while (arg_idx < argc && argv[arg_idx][0] == '-') {
-        int j = 1;
-        while (argv[arg_idx][j] != '\0') {
-            if (argv[arg_idx][j] == 'n') n_flag = 1;
-            else if (argv[arg_idx][j] == 'i') i_flag = 1;
-            else if (argv[arg_idx][j] == 'w') w_flag = 1;
-            else if (argv[arg_idx][j] == 'c') c_flag = 1;
-            else {
-                fprintf(stderr, "grep-lite: unknown option -- '%c'\n", argv[arg_idx][j]);
+        printf("Please enter the folder you want to search in: ");
+        scanf("%255s", userFolder);
+
+        printf("Please enter the pattern you want to search for: ");
+        scanf("%255s", pattern);
+
+//---------------------------Flag GUI-------------------------------//
+        while (flag != 0) {
+                printf("--------------------------------------------------------------------\n");
+                printf("1:Flag-n (line numbers)\n");
+                printf("2:Flag-i (case insensitive)\n");
+                printf("3:Flag-w (whole word)\n");
+                printf("4:Flag-c (count)\n");
+                printf("--------------------------------------------------------------------\n");
+
+                printf("Current selected flags: n:%d, i:%d, w:%d, c:%d\n",
+                       flag_n, flag_i, flag_w, flag_c);
+
+                printf("Select what flags you want to use (press 0 to finish): ");
+                scanf("%d", &flag);
+
+                if (flag != 0) {
+                        printf("\x1b[8A\r");
+                }
+
+                if (flag < 5 && flag > 0) {
+                        switch (flag) {
+                        case 1:
+                                flag_n = !flag_n;
+                                break;
+
+                        case 2:
+                                flag_i = !flag_i;
+                                break;
+
+                        case 3:
+                                flag_w = !flag_w;
+                                break;
+
+                        case 4:
+                                flag_c = !flag_c;
+                                break;
+                        }
+                }
+        }
+
+//---------------------------Search folder-----------------------------//
+        DIR *folder = opendir(userFolder);
+        struct dirent *entry;
+
+        if (folder == NULL) {
+                printf("Could not open folder: %s\n", userFolder);
                 return 1;
-            }
-            j++;
-        }
-        arg_idx++;
-    }
-
-    if (arg_idx >= argc) {
-        fprintf(stderr, "grep-lite: missing pattern argument\n");
-        return 1;
-    }
-    
-    char *pattern = argv[arg_idx];
-    
-    if (strlen(pattern) == 0) {
-        fprintf(stderr, "grep-lite: pattern cannot be empty\n");
-        return 1;
-    }
-    
-    arg_idx++;
-
-    int num_files = argc - arg_idx;
-    int multi = (num_files > 1) ? 1 : 0;
-
-    if (num_files == 0) {
-        process_stream(stdin, "(standard input)", pattern, n_flag, i_flag, w_flag, c_flag, 0);
-    } else {
-        for (int i = arg_idx; i < argc; i++) {
-            FILE *f = fopen(argv[i], "r");
-            if (f == NULL) {
-                fprintf(stderr, "grep-lite: %s: No such file or directory\n", argv[i]);
-                continue; 
-            }
-            process_stream(f, argv[i], pattern, n_flag, i_flag, w_flag, c_flag, multi);
-            fclose(f);
-        }
-    }
-    return 0;
-}
-
-
-void process_stream(FILE *file, const char *pattern, int n_flag, int i_flag, int w_flag, int c_flag) {
-    char line[1024]; 
-
-    
-    while (fgets(line, sizeof(line), file)) {
-        // check if pattern is in the line
-        if (i_flag == 1){
-            process_i(line, pattern);
-        }
-        if (strstr(line, pattern) != NULL) {
-            printf("%s", line);
         }
 
-    }
-}
+        while ((entry = readdir(folder)) != NULL) {
+                char path[512];
+                struct stat fileInfo;
+                FILE *file;
 
+                if (strcmp(entry->d_name, ".") == 0 ||
+                    strcmp(entry->d_name, "..") == 0) {
+                        continue;
+                }
 
-void process_i(const char *line, const char *pattern){
-    if (strcasestr(line, pattern)!=NULL){
-        printf("%s", line);
-    }
+                snprintf(path, sizeof(path), "%s/%s", userFolder, entry->d_name);
+
+                if (stat(path, &fileInfo) != 0) {
+                        continue;
+                }
+
+                if (!S_ISREG(fileInfo.st_mode)) {
+                        continue;
+                }
+
+                file = fopen(path, "r");
+
+                if (file == NULL) {
+                        printf("Could not open file: %s\n", path);
+                        continue;
+                }
+
+                process_stream(file, path, pattern, flag_n, flag_i, flag_w, flag_c, 1);
+
+                fclose(file);
+        }
+
+        closedir(folder);
+
+        return 0;
 }
