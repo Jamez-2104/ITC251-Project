@@ -18,11 +18,12 @@ int main(void) {
         printf("Welcome to grep-lite\n");
 
         printf("Please enter the folder you want to search in: ");
-        scanf("%255s", userFolder);
+	fgets(userFolder, sizeof(userFolder), stdin);//allows entire line to be read, no more errors!
+	userFolder[strcspn(userFolder, "\n")]= '\0';//removes "\n" to not break next section
 
         printf("Please enter the pattern you want to search for: ");
-        scanf("%255s", pattern);
-
+	fgets(pattern, sizeof(pattern), stdin);//allows entire line to be read, no more errors!
+	pattern[strcspn(pattern, "\n")] = '\0';//removes "\n" to not break next section
 //---------------------------Flag GUI-------------------------------//
         while (flag != 0) {
                 printf("--------------------------------------------------------------------\n");
