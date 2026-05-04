@@ -19,10 +19,10 @@ grep-lite/
 
 ## Building
 
-Requires `gcc` and `make`.
+With `gcc`:
 
 ```bash
-make
+gcc main.c search.c -o grep-lite
 ```
 
 To remove the binary:
@@ -117,4 +117,4 @@ With `-w` — matches `error` and `error.` and `(error)` but not `errors`:
 
 ## Authors
 
-Add our names here.
+James Baidiango, Rafael Mercado, Marco Gonzalez, Chinedu Meremikwu.
