@@ -18,12 +18,32 @@ int main(void) {
         printf("Welcome to grep-lite\n");
 
         printf("Please enter the folder you want to search in: ");
-	fgets(userFolder, sizeof(userFolder), stdin);//allows entire line to be read, no more errors!
-	userFolder[strcspn(userFolder, "\n")]= '\0';//removes "\n" to not break next section
+        while(1){
+                fgets(userFolder, sizeof(userFolder), stdin);//allows entire line to be read, no more errors!
+	        userFolder[strcspn(userFolder, "\n")]= '\0';//removes "\n" to not break next section
+
+                if(strlen(userFolder)==0){
+                        printf("Folder input can not be empty\n");
+                        printf("Enter a valid folder name: ");
+                        continue;
+                }
+                break;
+        }
+        
+
 
         printf("Please enter the pattern you want to search for: ");
-	fgets(pattern, sizeof(pattern), stdin);//allows entire line to be read, no more errors!
-	pattern[strcspn(pattern, "\n")] = '\0';//removes "\n" to not break next section
+        while(1){
+	        fgets(pattern, sizeof(pattern), stdin);//allows entire line to be read, no more errors!
+	        pattern[strcspn(pattern, "\n")] = '\0';//removes "\n" to not break next section
+
+                if(strlen(pattern)==0){
+                        printf("Pattern can not be left empty\n");
+                        printf("Enter a valid pattern: ");
+                        continue;
+                }
+                break;
+        }
 //---------------------------Flag GUI-------------------------------//
         while (flag != 0) {
                 printf("--------------------------------------------------------------------\n");
