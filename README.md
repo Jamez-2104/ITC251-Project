@@ -25,12 +25,6 @@ With `gcc`:
 gcc main.c search.c -o grep-lite
 ```
 
-To remove the binary:
-
-```bash
-make clean
-```
-
 ---
 
 ## Usage
@@ -89,12 +83,10 @@ With `-c`:
 ./logs/debug.log:1
 ```
 
-With `-w` — matches `error` and `error.` and `(error)` but not `errors`:
+With `-w`: matches `error` and `error.` and `(error)` but not `errors`:
 ```
 ./logs/app.log:an error occurred
 ```
-
-Note: file order in results is not guaranteed — it depends on the order the OS returns directory entries.
 
 ---
 
